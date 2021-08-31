@@ -1,0 +1,35 @@
+
+# Created by https://www.gitignore.io/api/visualstudiocode
+# Edit at https://www.gitignore.io/?templates=visualstudiocode
+blender-compo-up
+blender-compo-up/*
+blender_docs
+blender_docs/*
+build_windows_x64_vc16_Release
+build_windows_x64_vc16_Release/*
+blender
+blender/*
+lib
+lib/*
+build_windows_Bpy_x64_vc16_Release
+build_windows_Bpy_x64_vc16_Release/*
+build_windows_Full_x64_vc16_Release
+build_windows_Full_x64_vc16_Release/*
+BuildBPYLogs.txt
+BuildLogs.txt
+
+
+### VisualStudioCode ###
+.vscode
+.vs
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+
+# End of https://www.gitignore.io/api/visualstudiocode

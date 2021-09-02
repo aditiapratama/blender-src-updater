@@ -17,3 +17,8 @@
 blender/
 build_linux/
 lib.bak/
+BuildLogs.txt
+blender-compo-up/
+build_linux_full/
+build_linux~/
+lib/

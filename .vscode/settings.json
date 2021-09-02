@@ -20,5 +20,7 @@
         "terminal.ansiRed": "#F07178",
         "terminal.ansiWhite": "#959DCB",
         "terminal.ansiYellow": "#FFCB6B"
-    }
+    },
+    "git.ignoreLimitWarning": true,
+    "python.pythonPath": "/home/aditia/.pyenv/versions/3.7.9/bin/python"
 }

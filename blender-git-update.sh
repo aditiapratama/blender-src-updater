@@ -13,41 +13,44 @@
 # Main Repo
 : ${BLENDERGITREPO="$HOME/blender-git"}
 : ${BLENDERGITSOURCE="$HOME/blender-git/blender"}
+
 # : ${BPYBUILD="$BLENDERGITREPO/build_windows_Bpy_x64_vc16_Release/bin/Release"}
 : ${BLENDERGITBUILD="$BLENDERGITREPO/build_linux_full/bin"}
-: ${BLENDERUPDATER="/home/aditia/Workspaces/Codes/BlenderUpdaterCLI"}
-: ${PYTHONDIR="/home/aditia/.pyenv/versions/3.7.9/lib/python3.7"}
+: ${BLENDERUPDATER="/home/aditia/Workspaces/git/BlenderUpdaterCLI"}
+: ${PYTHONDIR="/home/aditia/.pyenv/versions/3.9.6/lib/python3.9"}
 : ${LIB="/$BLENDERGITREPO/lib/linux_centos7_x86_64"}
+
 # User
 : ${USERNAME="Aditia A. Pratama"}
 : ${EMAIL="aditia.ap@gmail.com"}
+
 # Blender Main
-: ${BLENDER_MAIN="/opt/blender"}
 : ${VERSION_MAIN="2.91.2"}
 : ${CONFIG_MAIN="2.91"}
-# Blender Beta
-: ${BLENDER_BETA="/opt/blender/next/beta"}
-: ${VERSION_BETA="2.93.0"}
-: ${CONFIG_BETA="2.93"}
-# Blender LTS
-: ${BLENDER_LTS="/opt/blender/next/lts"}
-: ${VERSION_LTS="2.83.16"}
-: ${CONFIG_LTS="2.83"}
-# Blender ECycles Beta
-: ${ECYCLES_BETA="/opt/blender/next/ecycles"}
-# Blender GIT
-# : ${BLENDER_GIT="/d/BlenderMaster"}
-: ${VERSION_GIT="2.93.4"}
-: ${CONFIG_GIT="2.93"}
+: ${BLENDER_MAIN="/opt/blender/$VERSION_MAIN"}
 
-# : ${BLENDERGIT="/opt/blender"}
-# : ${BLENDERBUILD="$BLENDERGITREPO/build_linux/"}
-# : ${BLENDERVERSION="2.82"}
-# : ${BETAVERSION="2.83"}
-# : ${BUILDBOTVERSION="2.83.1"}
-# : ${BLENDERBETA="/opt/blender/next/lts/"}
-# : ${BLENDERECYCLES="/opt/blender/next/ecycles"}
-: ${BUILDOPTION="full"} #default is nothing, clean for clean up build
+# Blender RC
+: ${VERSION_RC="2.93.6"}
+: ${CONFIG_RC="2.93"}
+: ${BLENDER_RC="/opt/blender/$VERSION_RC"}
+
+# Blender 2.8 LTS
+: ${VERSION_LTS_01="2.83.17"}
+: ${CONFIG_LTS_01="2.83"}
+: ${BLENDER_LTS_01="/opt/blender/$VERSION_LTS_01"}
+
+# Blender 2.9 LTS
+: ${VERSION_LTS_02="2.93.5"}
+: ${CONFIG_LTS_02="2.93"}
+: ${BLENDER_LTS_02="/opt/blender/$VERSION_LTS_02"}
+
+# Blender GIT
+: ${VERSION_GIT="3.0.0"}
+: ${CONFIG_GIT="3.0"}
+: ${BLENDER_GIT="/opt/blender/$VERSION_GIT"}
+
+# default is nothing, clean for clean up build
+: ${BUILDOPTION="full"}
 
 ########
 # CORE #
@@ -61,7 +64,7 @@ _download_alpha_build() {
         rm -rf $BLENDERGITBUILD/$CONFIG_GIT/scripts/addons_contrib
     # Will enter here if $DIRECTORY exists, even if it contains spaces
     fi
-    python $BLENDERUPDATER/BlenderUpdaterCLI.py -p $BLENDERGITBUILD -n -b $VERSION_GIT
+    pyenv exec python $BLENDERUPDATER/BlenderUpdaterCLI.py -p $BLENDER_RC -n -b $VERSION_RC
     notify-send "Blender Alpha from Buildbot Updated"
 
     res2=$(date +%s.%N)
@@ -203,7 +206,7 @@ _update_view_log() {
 }
 
 _view_log() {
-    markdown2 -x tables,markdown-in-html $BLENDERGITREPO/log.md >$BLENDERGITREPO/log.html
+    pyenv exec markdown2 -x tables,markdown-in-html $BLENDERGITREPO/log.md >$BLENDERGITREPO/log.html
     cat $BLENDERGITREPO/header.html $BLENDERGITREPO/log.html > $BLENDERGITREPO/report.html
     cd $BLENDERGITREPO
     xdg-open report.html >/dev/null 2>&1
@@ -244,9 +247,9 @@ _copy_addons() {
     rm -rf $(ls -1 --ignore=cycles .)
     rm -rf $BLENDER_MAIN/$CONFIG_MAIN/scripts/addons_contrib
 
-    cd $BLENDER_BETA/$CONFIG_BETA/scripts/addons/
+    cd $BLENDER_RC/$CONFIG_RC/scripts/addons/
     rm -rf $(ls -1 --ignore=cycles .)
-    rm -rf $BLENDER_BETA/$CONFIG_BETA/scripts/addons_contrib
+    rm -rf $BLENDER_RC/$CONFIG_RC/scripts/addons_contrib
 
     # Start copying from latest master
 
@@ -254,11 +257,11 @@ _copy_addons() {
 
     cp -R $(ls -1 --ignore=cycles .) $BLENDER_MAIN/$CONFIG_MAIN/scripts/addons/
 
-    cp -R $(ls -1 --ignore=cycles .) $BLENDER_BETA/$CONFIG_BETA/scripts/addons/
+    cp -R $(ls -1 --ignore=cycles .) $BLENDER_RC/$CONFIG_RC/scripts/addons/
 
     cp -R $BLENDERGITSOURCE/release/scripts/addons_contrib $BLENDER_MAIN/$CONFIG_MAIN/scripts/addons_contrib
 
-    cp -R $BLENDERGITSOURCE/release/scripts/addons_contrib $BLENDER_BETA/$CONFIG_BETA/scripts/addons_contrib
+    cp -R $BLENDERGITSOURCE/release/scripts/addons_contrib $BLENDER_RC/$CONFIG_RC/scripts/addons_contrib
 
     res2=$(date +%s.%N)
     dt=$(echo "$res2 - $res1" | bc)
@@ -273,25 +276,25 @@ _copy_addons() {
 
 }
 
-_copy_workfile() {
-    res1=$(date +%s.%N)
-
-    notify-send "Start update Blender"
-    rm -rf $BLENDER28/$BETAVERSION/scripts/addons_contrib
-    cp -R $BLENDERBUILD/. $BLENDER28
-    notify-send "Blender Updated"
-
-    res2=$(date +%s.%N)
-    dt=$(echo "$res2 - $res1" | bc)
-    dd=$(echo "$dt/86400" | bc)
-    dt2=$(echo "$dt-86400*$dd" | bc)
-    dh=$(echo "$dt2/3600" | bc)
-    dt3=$(echo "$dt2-3600*$dh" | bc)
-    dm=$(echo "$dt3/60" | bc)
-    ds=$(echo "$dt3-60*$dm" | bc)
-
-    printf "Copy Workfiles Total Time: %d:%02d:%02d:%02.4f\n" $dd $dh $dm $ds
-}
+# _copy_workfile() {
+    # res1=$(date +%s.%N)
+#
+    # notify-send "Start update Blender"
+    # rm -rf $BLENDER28/$BETAVERSION/scripts/addons_contrib
+    # cp -R $BLENDERBUILD/. $BLENDER28
+    # notify-send "Blender Updated"
+#
+    # res2=$(date +%s.%N)
+    # dt=$(echo "$res2 - $res1" | bc)
+    # dd=$(echo "$dt/86400" | bc)
+    # dt2=$(echo "$dt-86400*$dd" | bc)
+    # dh=$(echo "$dt2/3600" | bc)
+    # dt3=$(echo "$dt2-3600*$dh" | bc)
+    # dm=$(echo "$dt3/60" | bc)
+    # ds=$(echo "$dt3-60*$dm" | bc)
+#
+    # printf "Copy Workfiles Total Time: %d:%02d:%02d:%02.4f\n" $dd $dh $dm $ds
+# }
 
 
 
